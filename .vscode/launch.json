@@ -10,8 +10,8 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/bin/Debug/net5.0-windows10.0.19041.0/win10-x64/notify.dll",
-            "args": ["-a","Notify Debug","-t","Title","-b","Body", "-i", "C:\\Users\\algavris\\powerbi.png"],
+            "program": "${workspaceFolder}/bin/Debug/net6.0-windows10.0.19041.0/win10-x64/notify.dll",
+            "args": ["-a","Notify Debug","-t","Title","-b","Body", "-i", "${workspaceFolder}\\notification-bell-13115.png"],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",

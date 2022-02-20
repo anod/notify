@@ -1,62 +1,71 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.CommandLine;
 using Windows.UI.Notifications;
-using System.CommandLine.Invocation;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace notify
 {
     class Program
     {
-        static int Main(string[] args)
+        static async Task Main(string[] args)
         {
-           var rootCommand = new RootCommand("Notify")
-            {
-                new Option<string>(
+            var appId = new Option<string>(
                     new string[] { "--app-id", "-a" },
                     description: "Application identifier"
-                ) {
-                    IsRequired = true
-                },
-                new Option<string>(
-                    new string[] { "--title", "-t" },
-                    "Notification title"
-                ) {
-                    IsRequired = true
-                },
-                new Option<string>(
-                    new string[] { "--body", "-b" },
-                    "Notification body"
-                ) {
-                    IsRequired = true
-                },
-                new Option<FileInfo>(
-                    new string[] { "--image", "-i" },
-                    "Notification image path"
-                ) {
-                    Argument = new Argument<FileInfo>().ExistingOnly()
-                }
+                )
+            {
+                IsRequired = true
             };
 
-            // Note that the parameters of the handler method are matched according to the names of the options
-            rootCommand.Handler = CommandHandler.Create(
-                (string appId,string title,string body, FileInfo image) =>
+            var title = new Option<string>(
+                    new string[] { "--title", "-t" },
+                    "Notification title"
+                )
             {
-                Show(appId, title, body, image?.FullName);
-                Thread.Sleep(300);
-            });
+                IsRequired = true
+            };
 
-            return rootCommand.InvokeAsync(args).Result;
+            var body = new Option<string>(
+                    new string[] { "--body", "-b" },
+                    "Notification body"
+                )
+            {
+                IsRequired = true
+            };
+            
+            var icon = new Option<FileInfo>(
+                    new string[] { "--image", "-i" },
+                    "Notification image path"
+            ).ExistingOnly();
+            
+            var rootCommand = new RootCommand("Notify")
+            {
+                appId,
+                title,
+                body,
+                icon
+            };
+
+            rootCommand.SetHandler((string appId, string title, string body, FileInfo image) =>
+                {
+                    Show(appId, title, body, image?.FullName);
+                    Thread.Sleep(300);
+                },
+                appId, title, body, icon
+            );
+
+            await rootCommand.InvokeAsync(args);
         }
 
         private static void Show(string appId, string title, string body, string imagePath)
         {
-            
+
             var templateType = (imagePath == null) ? ToastTemplateType.ToastText02 : ToastTemplateType.ToastImageAndText02;
             var template = ToastNotificationManager.GetTemplateContent(templateType);
 
-            if (imagePath != null) {
+            if (imagePath != null)
+            {
                 var images = template.GetElementsByTagName("image");
                 var src = template.CreateAttribute("src");
                 src.Value = imagePath;
