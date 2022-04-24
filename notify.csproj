@@ -4,6 +4,14 @@
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win10-x64;win10-arm64</RuntimeIdentifiers>
+
+    <Version>1.0.0-beta</Version>
+    <Authors>Alexandr Gavrishev</Authors>
+    <Description>Tool to show windows notification</Description>
+    <Url>https://github.com/anod/notify</Url>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <IsTool>true</IsTool>
   </PropertyGroup>
   <PropertyGroup>
     <CsWinRTIncludes>notify</CsWinRTIncludes>

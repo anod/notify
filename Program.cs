@@ -10,6 +10,28 @@ namespace notify
     {
         static async Task Main(string[] args)
         {
+            System.Console.WriteLine($"Culture: {System.Threading.Thread.CurrentThread.CurrentCulture}");
+            
+            var rootCommand = CreateOptionsCommand();
+            var configuration = new CommandLineConfiguration(rootCommand);
+            configuration.ThrowIfInvalid();
+
+            rootCommand.SetHandler((string appId, string title, string body, FileInfo image) =>
+                {
+                    Show(appId, title, body, image?.FullName);
+                    Thread.Sleep(300);
+                },
+                rootCommand.Options[0],
+                rootCommand.Options[1],
+                rootCommand.Options[2],
+                rootCommand.Options[3]
+            );
+
+            await rootCommand.InvokeAsync(args);
+        }
+
+        private static RootCommand CreateOptionsCommand()
+        {
             var appId = new Option<string>(
                     new string[] { "--app-id", "-a" },
                     description: "Application identifier"
@@ -39,28 +61,17 @@ namespace notify
                     "Notification image path"
             ).ExistingOnly();
             
-            var rootCommand = new RootCommand("Notify")
+            return new RootCommand("Notify")
             {
                 appId,
                 title,
                 body,
                 icon
             };
-
-            rootCommand.SetHandler((string appId, string title, string body, FileInfo image) =>
-                {
-                    Show(appId, title, body, image?.FullName);
-                    Thread.Sleep(300);
-                },
-                appId, title, body, icon
-            );
-
-            await rootCommand.InvokeAsync(args);
         }
 
         private static void Show(string appId, string title, string body, string imagePath)
         {
-
             var templateType = (imagePath == null) ? ToastTemplateType.ToastText02 : ToastTemplateType.ToastImageAndText02;
             var template = ToastNotificationManager.GetTemplateContent(templateType);
 
